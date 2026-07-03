@@ -30,8 +30,8 @@ export async function GET(
     }
 
     // Process students details
-    const studentsFormatted = branch.students.map(s => {
-      const activeComplaints = s.complaints.filter(c => c.status !== 'Resolved').length;
+    const studentsFormatted = branch.students.map((s: any) => {
+      const activeComplaints = s.complaints.filter((c: any) => c.status !== 'Resolved').length;
       return {
         id: s.id,
         name: s.name,
