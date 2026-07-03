@@ -26,11 +26,10 @@ function getPrismaInstance() {
     return globalForPrisma.prisma;
   }
 
-  // Prevent loading Prisma Client if DATABASE_URL is missing or during Next.js build phase
-  const hasDbUrl = process.env.DATABASE_URL && process.env.DATABASE_URL !== "" && !process.env.DATABASE_URL.includes("username:password");
+  // Prevent loading Prisma Client during Next.js build phase on Vercel
   const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
 
-  if (isBuildPhase || !hasDbUrl) {
+  if (isBuildPhase) {
     return dummyPrisma;
   }
 
@@ -53,14 +52,19 @@ export const prisma = new Proxy({} as PrismaClient, {
       return undefined;
     }
     const instance = getPrismaInstance();
-    const value = Reflect.get(instance, prop, receiver);
-    if (typeof value === 'function') {
+    // Do not use Reflect.get with receiver if instance is dummyPrisma to avoid bind and target matching issues
+    const value = instance === dummyPrisma ? (instance as any)[prop] : Reflect.get(instance, prop, receiver);
+    if (typeof value === 'function' && instance !== dummyPrisma) {
       return value.bind(instance);
     }
     return value;
   },
   set(target, prop, value, receiver) {
     const instance = getPrismaInstance();
+    if (instance === dummyPrisma) {
+      (instance as any)[prop] = value;
+      return true;
+    }
     return Reflect.set(instance, prop, value, receiver);
   }
 });
