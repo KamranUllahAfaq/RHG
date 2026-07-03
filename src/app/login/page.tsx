@@ -14,8 +14,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) {
-      setError('Please fill in all fields.');
+    if (!username) {
+      setError('Please enter your username or email.');
       return;
     }
 
@@ -23,7 +23,7 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      const res = await login(username, password);
+      const res = await login(username, 'password');
       if (!res.success) {
         setError(res.error || 'Invalid credentials');
         setSubmitting(false);
@@ -49,7 +49,7 @@ export default function LoginPage() {
             <p className="text-xs font-label-sm text-on-surface-variant/70 mt-1 uppercase tracking-wider">Islamabad Hostel City</p>
           </Link>
           <h2 className="text-xl font-bold mt-8 text-on-surface">Student Portal Sign In</h2>
-          <p className="text-xs text-on-surface-variant mt-1">Enter your credentials to access your account.</p>
+          <p className="text-xs text-on-surface-variant mt-1">Enter your username to access your account.</p>
         </div>
 
         {/* Error Alert */}
@@ -78,39 +78,6 @@ export default function LoginPage() {
                 className="w-full pl-11 pr-4 py-3 bg-surface-container/60 hover:bg-surface-container/90 focus:bg-background border border-white/10 focus:border-primary-container rounded-xl text-sm transition-all outline-none text-on-surface focus:ring-1 focus:ring-primary-container"
                 required
               />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-[11px] font-bold text-on-surface-variant/80 uppercase tracking-wider">
-                Password
-              </label>
-              <a href="#" className="text-[11px] text-primary hover:underline font-semibold">
-                Forgot Password?
-              </a>
-            </div>
-            <div className="relative">
-              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-[20px]">
-                lock
-              </span>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-11 pr-12 py-3 bg-surface-container/60 hover:bg-surface-container/90 focus:bg-background border border-white/10 focus:border-primary-container rounded-xl text-sm transition-all outline-none text-on-surface focus:ring-1 focus:ring-primary-container"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-on-surface p-1 transition-all"
-              >
-                <span className="material-symbols-outlined text-[20px]">
-                  {showPassword ? 'visibility_off' : 'visibility'}
-                </span>
-              </button>
             </div>
           </div>
 
