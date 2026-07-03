@@ -11,7 +11,7 @@ export async function GET() {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    const studentId = parseInt(studentIdCookie.value, 10);
+    const studentId = studentIdCookie.value;
     const student = await prisma.student.findUnique({
       where: { id: studentId },
       include: { roommates: true },

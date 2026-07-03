@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const { title, message, sendTo, branchName, studentId, priority } = await request.json();
 
     // 1. Determine target students
-    let targetStudents: { id: number }[] = [];
+    let targetStudents: { id: string }[] = [];
 
     const dateStr = new Date().toLocaleDateString();
 
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         });
       }
     } else if (sendTo === 'Specific Student') {
-      const sId = parseInt(studentId, 10);
+      const sId = studentId;
       if (sId) {
         targetStudents = [{ id: sId }];
       }

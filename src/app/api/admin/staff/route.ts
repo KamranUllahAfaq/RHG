@@ -74,7 +74,7 @@ export async function PUT(request: Request) {
     const { id, name, category, role, contact, salary, dutyArea, shift, status } = body;
 
     const updated = await prisma.staff.update({
-      where: { id: parseInt(id, 10) },
+      where: { id: id },
       data: {
         name,
         category,

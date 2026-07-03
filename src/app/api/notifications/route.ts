@@ -11,7 +11,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const studentId = parseInt(studentIdCookie.value, 10);
+    const studentId = studentIdCookie.value;
     const notifications = await prisma.notification.findMany({
       where: { studentId },
       orderBy: { id: 'desc' },
@@ -33,7 +33,7 @@ export async function PUT() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const studentId = parseInt(studentIdCookie.value, 10);
+    const studentId = studentIdCookie.value;
     await prisma.notification.updateMany({
       where: { studentId, read: false },
       data: { read: true },

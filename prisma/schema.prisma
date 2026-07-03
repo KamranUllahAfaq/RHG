@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:../dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model Student {
-  id                 Int            @id @default(autoincrement())
+  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
   username           String         @unique
   password           String
   name               String
@@ -33,9 +33,9 @@ model Student {
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   
-  branchId           Int
+  branchId           String         @db.ObjectId
   branch             Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  roomId             Int?
+  roomId             String?        @db.ObjectId
   room               Room?          @relation(fields: [roomId], references: [id], onDelete: SetNull)
   
   roommates          Roommate[]
@@ -45,7 +45,7 @@ model Student {
 }
 
 model Branch {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String    @unique
   type      String    // "Girls", "Boys"
   students  Student[]
@@ -55,20 +55,20 @@ model Branch {
 }
 
 model Room {
-  id           Int       @id @default(autoincrement())
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
   roomNumber   String
   floor        String
   roomType     String    // "Single", "Double", "Triple", "Quad"
   totalBeds    Int
   occupiedBeds Int       @default(0)
   status       String    @default("Available") // "Available", "Full", "Maintenance", "Reserved"
-  branchId     Int
+  branchId     String    @db.ObjectId
   branch       Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
   students     Student[]
 }
 
 model Warden {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   contact       String
   email         String
@@ -76,12 +76,12 @@ model Warden {
   salary        Float
   assignedFloor String
   status        String   @default("Active") // "Active", "On Leave"
-  branchId      Int
+  branchId      String   @db.ObjectId
   branch        Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
 }
 
 model Staff {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   category    String   // "Mess Staff", "Working Maid", "Sanitary Staff", "Security Guard", "Maintenance Staff", "Driver", "Other"
   role        String?  // "Cook", "Assistant Cook", "Mess Manager", "Food Server", etc.
@@ -91,22 +91,22 @@ model Staff {
   shift       String   // "Day", "Night", "Rotating"
   status      String   @default("Active") // "Active", "On Leave", "Suspended"
   joiningDate String
-  branchId    Int
+  branchId    String   @db.ObjectId
   branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
 }
 
 model Roommate {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   rollNumber String
   mobile     String
   email      String
-  studentId  Int
+  studentId  String   @db.ObjectId
   student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   month         String
   dueDate       String
   amount        Float
@@ -116,12 +116,12 @@ model Payment {
   method        String?
   verifiedBy    String?  // Admin username who verified this
   adminNote     String?  // Reject reason or verification note
-  studentId     Int
+  studentId     String   @db.ObjectId
   student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Complaint {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   category    String
   description String
@@ -131,24 +131,24 @@ model Complaint {
   priority    String   @default("Normal") // "Normal", "Important", "Urgent"
   assignedTo  String?  // Name/Role of staff assigned
   adminNote   String?  // Response from Admin
-  studentId   Int
+  studentId   String   @db.ObjectId
   student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String
   type      String   // "Info", "Warning", "Alert"
   date      String
   priority  String   @default("Normal") // "Normal", "Important", "Urgent"
   read      Boolean  @default(false)
-  studentId Int
+  studentId String   @db.ObjectId
   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model TransportRoute {
-  id          Int    @id @default(autoincrement())
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   routeNumber String
   destination String
   departure   String

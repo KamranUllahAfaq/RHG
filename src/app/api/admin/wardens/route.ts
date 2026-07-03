@@ -67,7 +67,7 @@ export async function PUT(request: Request) {
     const { id, name, contact, email, shift, salary, assignedFloor, status } = body;
 
     const updated = await prisma.warden.update({
-      where: { id: parseInt(id, 10) },
+      where: { id: id },
       data: {
         name,
         contact,

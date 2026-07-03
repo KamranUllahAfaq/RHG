@@ -11,7 +11,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const studentId = parseInt(studentIdCookie.value, 10);
+    const studentId = studentIdCookie.value;
     const { mobile, emergencyContact, email } = await request.json();
 
     const updatedStudent = await prisma.student.update({
