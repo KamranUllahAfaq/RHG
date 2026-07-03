@@ -8,13 +8,23 @@ function getPrismaInstance() {
   }
 
   // Prevent loading better-sqlite3 during Vercel build/prerender phase
-  if (process.env.VERCEL || process.env.NEXT_PHASE === 'phase-production-build') {
-    try {
-      globalForPrisma.prisma = new PrismaClient();
-      return globalForPrisma.prisma;
-    } catch (e) {
-      console.warn("Prisma Client fallback initialization:", e);
-    }
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    const dummyPrisma = new Proxy({} as any, {
+      get(target, prop) {
+        if (prop === 'then') return undefined;
+        // Return a nested proxy to handle chaining (e.g. prisma.student.findMany)
+        return new Proxy(() => {}, {
+          get(t, p) {
+            if (p === 'then') return undefined;
+            return () => Promise.resolve([]);
+          },
+          apply() {
+            return Promise.resolve([]);
+          }
+        });
+      }
+    });
+    return dummyPrisma;
   }
 
   try {
@@ -40,6 +50,10 @@ function getPrismaInstance() {
 // Export a Proxy that behaves exactly like PrismaClient but initializes lazily
 export const prisma = new Proxy({} as PrismaClient, {
   get(target, prop, receiver) {
+    // Avoid triggering instantiation for standard check properties if accessed before initialization
+    if (prop === '$$typeof' || prop === 'then' || prop === 'constructor' || prop === 'toJSON') {
+      return undefined;
+    }
     const instance = getPrismaInstance();
     const value = Reflect.get(instance, prop, receiver);
     if (typeof value === 'function') {
