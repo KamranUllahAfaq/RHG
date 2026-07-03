@@ -14,16 +14,11 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username) {
-      setError('Please enter your username or email.');
-      return;
-    }
-
     setError('');
     setSubmitting(true);
 
     try {
-      const res = await login(username, 'password');
+      const res = await login('student', 'password');
       if (!res.success) {
         setError(res.error || 'Invalid credentials');
         setSubmitting(false);
@@ -49,7 +44,7 @@ export default function LoginPage() {
             <p className="text-xs font-label-sm text-on-surface-variant/70 mt-1 uppercase tracking-wider">Islamabad Hostel City</p>
           </Link>
           <h2 className="text-xl font-bold mt-8 text-on-surface">Student Portal Sign In</h2>
-          <p className="text-xs text-on-surface-variant mt-1">Enter your username to access your account.</p>
+          <p className="text-xs text-on-surface-variant mt-1">Click the button below to access your account.</p>
         </div>
 
         {/* Error Alert */}
@@ -62,25 +57,6 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-[11px] font-bold text-on-surface-variant/80 uppercase tracking-wider mb-2">
-              Username or Email
-            </label>
-            <div className="relative">
-              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-[20px]">
-                person
-              </span>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
-                className="w-full pl-11 pr-4 py-3 bg-surface-container/60 hover:bg-surface-container/90 focus:bg-background border border-white/10 focus:border-primary-container rounded-xl text-sm transition-all outline-none text-on-surface focus:ring-1 focus:ring-primary-container"
-                required
-              />
-            </div>
-          </div>
-
           <button
             type="submit"
             disabled={submitting}
@@ -89,12 +65,12 @@ export default function LoginPage() {
             {submitting ? (
               <>
                 <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                Authenticating...
+                Accessing Portal...
               </>
             ) : (
               <>
                 <span className="material-symbols-outlined text-[18px]">login</span>
-                Sign In
+                Access Student Portal
               </>
             )}
           </button>

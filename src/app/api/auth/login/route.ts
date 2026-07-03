@@ -6,15 +6,18 @@ export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    let student = await prisma.student.findFirst({
-      where: {
-        OR: [
-          { username: username },
-          { email: username },
-        ],
-      },
-      include: { roommates: true },
-    });
+    let student = null;
+    if (username) {
+      student = await prisma.student.findFirst({
+        where: {
+          OR: [
+            { username: username },
+            { email: username },
+          ],
+        },
+        include: { roommates: true },
+      });
+    }
 
     // Fallback: If student is not found by username/email, get the first student
     if (!student) {
