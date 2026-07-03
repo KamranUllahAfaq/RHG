@@ -26,8 +26,8 @@ function getPrismaInstance() {
     return globalForPrisma.prisma;
   }
 
-  // Prevent loading Prisma Client during Next.js build phase on Vercel
-  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
+  // Prevent loading Prisma Client ONLY during Next.js build phase
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
 
   if (isBuildPhase) {
     return dummyPrisma;
