@@ -86,9 +86,9 @@ export default function LoginPage() {
               <label className="block text-[11px] font-bold text-on-surface-variant/80 uppercase tracking-wider">
                 Password
               </label>
-              <a href="#" className="text-[11px] text-primary hover:underline font-semibold">
-                Forgot Password?
-              </a>
+              <span className="text-[11px] text-on-surface-variant/50 font-medium cursor-default">
+                Contact Admin to Reset
+              </span>
             </div>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-[20px]">

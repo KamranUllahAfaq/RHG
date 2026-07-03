@@ -284,9 +284,9 @@ export default function LandingPage() {
             <p className="text-xs text-on-surface-variant mt-1">© 2026 Royal Group of Hostel. All rights reserved.</p>
           </div>
           <div className="flex gap-6 text-xs text-on-surface-variant">
-            <a href="#" className="hover:text-primary-container transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary-container transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-primary-container transition-colors">Support</a>
+            <a href="#about" className="hover:text-primary-container transition-colors">About Us</a>
+            <a href="#amenities" className="hover:text-primary-container transition-colors">Amenities</a>
+            <a href="#portals" className="hover:text-primary-container transition-colors">Sign In</a>
           </div>
         </div>
       </footer>

@@ -12,6 +12,13 @@ export async function GET() {
     }
 
     const studentId = studentIdCookie.value;
+
+    // Validate that the cookie value is a valid 24-char MongoDB ObjectID hex
+    // Old sessions from SQLite (numeric IDs like "12") will fail this check gracefully
+    if (!/^[a-fA-F0-9]{24}$/.test(studentId)) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+
     const student = await prisma.student.findUnique({
       where: { id: studentId },
       include: { roommates: true },

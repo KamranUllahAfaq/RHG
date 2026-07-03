@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { seedDatabaseIfNeeded } from '@/lib/seed-db';
 
 export async function POST(request: Request) {
   try {
+    // Auto-seed database if it is empty (e.g. on first run on Vercel)
+    await seedDatabaseIfNeeded();
+
     const { username, password } = await request.json();
 
     if (username === 'admin' && password === 'password') {

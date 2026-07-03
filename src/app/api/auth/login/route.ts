@@ -1,29 +1,41 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
+import { seedDatabaseIfNeeded } from '@/lib/seed-db';
 
 export async function POST(request: Request) {
   try {
+    // Auto-seed database if it is empty (e.g. on first run on Vercel)
+    await seedDatabaseIfNeeded();
+
     const { username, password } = await request.json();
 
-    let student = null;
-    if (username) {
-      student = await prisma.student.findFirst({
-        where: {
-          OR: [
-            { username: username },
-            { email: username },
-          ],
-        },
-        include: { roommates: true },
-      });
+    if (!username || !password) {
+      return NextResponse.json({ success: false, error: 'Username and password are required' }, { status: 400 });
     }
 
-    // Fallback: If student is not found by username/email but credentials are student/password, get the first student
+    let student = null;
+    // Try to find by username or email
+    student = await prisma.student.findFirst({
+      where: {
+        OR: [
+          { username: username },
+          { email: username },
+        ],
+      },
+      include: { roommates: true },
+    });
+
+    // Fallback: If not found and using default credentials, find the 'student' account specifically
     if (!student && username === 'student' && password === 'password') {
       student = await prisma.student.findFirst({
+        where: { username: 'student' },
         include: { roommates: true },
       });
+      // If no 'student' username exists, get any first student as last resort
+      if (!student) {
+        student = await prisma.student.findFirst({ include: { roommates: true } });
+      }
     }
 
     if (!student || (student.password !== password && !(username === 'student' && password === 'password'))) {

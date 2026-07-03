@@ -17,7 +17,6 @@ const adminNavItems: NavItem[] = [
   { name: 'Students', href: '/admin/students', icon: 'group' },
   { name: 'Rooms', href: '/admin/rooms', icon: 'meeting_room' },
   { name: 'Fees Management', href: '/admin/fees', icon: 'payments' },
-  { name: 'Payment Verification', href: '/admin/fees/verification', icon: 'verified_user' },
   { name: 'Complaints', href: '/admin/complaints', icon: 'report_problem' },
   { name: 'Transport', href: '/admin/transport', icon: 'directions_bus' },
   { name: 'Wardens', href: '/admin/wardens', icon: 'shield_person' },
