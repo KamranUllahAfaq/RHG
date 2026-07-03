@@ -14,6 +14,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'Username and password are required' }, { status: 400 });
     }
 
+    // Dynamic Mock Bypass if no database URL is set in environment (Zero-Config Test Mode)
+    const hasDatabaseUrl = typeof process.env.DATABASE_URL === 'string' && process.env.DATABASE_URL.trim() !== '';
+    if (!hasDatabaseUrl) {
+      if (username === 'student' && password === 'password') {
+        const cookieStore = await cookies();
+        cookieStore.set('student_id', 'mock_student_id_123456789012', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+        });
+        return NextResponse.json({
+          success: true,
+          student: {
+            id: 'mock_student_id_123456789012',
+            username: 'student',
+            name: 'Ahmad Malik (Mock Mode)',
+            email: 'ahmad.malik@student.comsats.edu.pk',
+            rollNumber: 'FA21-BCS-089',
+            hostelName: 'Branch 11',
+            roomNumber: 'B11-302',
+            balanceDue: 11000.0,
+            mobile: '+92 300 1234567',
+            emergencyContact: '+92 312 9876543',
+            roommates: [
+              { id: 1, name: 'Zain Ali', rollNumber: 'FA21-BCS-102', mobile: '+92 301 2223334', email: 'zain.ali@gmail.com' },
+              { id: 2, name: 'Hamza Khan', rollNumber: 'FA21-BCS-045', mobile: '+92 302 4445556', email: 'hamza.khan@gmail.com' },
+              { id: 3, name: 'Usman Tariq', rollNumber: 'FA21-BCS-118', mobile: '+92 303 6667778', email: 'usman.tariq@gmail.com' }
+            ],
+          },
+        });
+      }
+      return NextResponse.json({ success: false, error: 'Database is offline. Use "student" / "password" to sign in with mock data.' }, { status: 401 });
+    }
+
     let student = null;
     // Try to find by username or email
     student = await prisma.student.findFirst({

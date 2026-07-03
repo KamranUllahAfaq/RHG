@@ -41,10 +41,11 @@ function getPrismaInstance() {
     return globalForPrisma.prisma;
   }
 
-  // Prevent loading Prisma Client ONLY during Next.js build phase
+  // Prevent loading Prisma Client during Next.js build phase or if DATABASE_URL is missing
   const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+  const hasDatabaseUrl = typeof process.env.DATABASE_URL === 'string' && process.env.DATABASE_URL.trim() !== '';
 
-  if (isBuildPhase) {
+  if (isBuildPhase || !hasDatabaseUrl) {
     return dummyPrisma;
   }
 
