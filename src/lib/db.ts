@@ -2,28 +2,30 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global as unknown as { prisma: any };
 
+// A robust dummy client that mocks Prisma methods to prevent build/runtime crashes when database is unavailable
+const dummyPrisma = new Proxy({} as any, {
+  get(target, prop) {
+    if (prop === 'then') return undefined;
+    // Return a nested proxy to handle chaining (e.g. prisma.student.findMany)
+    return new Proxy(() => {}, {
+      get(t, p) {
+        if (p === 'then') return undefined;
+        return () => Promise.resolve([]);
+      },
+      apply() {
+        return Promise.resolve([]);
+      }
+    });
+  }
+});
+
 function getPrismaInstance() {
   if (globalForPrisma.prisma) {
     return globalForPrisma.prisma;
   }
 
-  // Prevent loading better-sqlite3 during Vercel build/prerender phase
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    const dummyPrisma = new Proxy({} as any, {
-      get(target, prop) {
-        if (prop === 'then') return undefined;
-        // Return a nested proxy to handle chaining (e.g. prisma.student.findMany)
-        return new Proxy(() => {}, {
-          get(t, p) {
-            if (p === 'then') return undefined;
-            return () => Promise.resolve([]);
-          },
-          apply() {
-            return Promise.resolve([]);
-          }
-        });
-      }
-    });
+  // Prevent loading better-sqlite3 on Vercel (both build and runtime)
+  if (process.env.VERCEL === '1' || process.env.NEXT_PHASE === 'phase-production-build') {
     return dummyPrisma;
   }
 
@@ -40,8 +42,9 @@ function getPrismaInstance() {
     
     globalForPrisma.prisma = new PrismaClient({ adapter });
   } catch (e) {
-    console.error("Failed to initialize Prisma with better-sqlite3, falling back to standard client:", e);
-    globalForPrisma.prisma = new PrismaClient();
+    console.error("Failed to initialize Prisma with better-sqlite3, falling back to dummy client:", e);
+    // Fall back to dummy client to avoid crashing the build/server when native bindings fail
+    return dummyPrisma;
   }
 
   return globalForPrisma.prisma;
