@@ -19,15 +19,15 @@ export async function POST(request: Request) {
       });
     }
 
-    // Fallback: If student is not found by username/email, get the first student
-    if (!student) {
+    // Fallback: If student is not found by username/email but credentials are student/password, get the first student
+    if (!student && username === 'student' && password === 'password') {
       student = await prisma.student.findFirst({
         include: { roommates: true },
       });
     }
 
-    if (!student) {
-      return NextResponse.json({ success: false, error: 'No student accounts found' }, { status: 404 });
+    if (!student || (student.password !== password && !(username === 'student' && password === 'password'))) {
+      return NextResponse.json({ success: false, error: 'Invalid username or password' }, { status: 401 });
     }
 
     // Set cookie session (simple mock cookie)
