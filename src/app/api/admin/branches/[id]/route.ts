@@ -49,8 +49,8 @@ export async function GET(
 
     // Subdivide staff
     const wardens = branch.wardens;
-    const messStaff = branch.staff.filter(s => s.category === 'Mess Staff');
-    const cleaningStaff = branch.staff.filter(s => s.category === 'Working Maid' || s.category === 'Sanitary Staff');
+    const messStaff = branch.staff.filter((s: any) => s.category === 'Mess Staff');
+    const cleaningStaff = branch.staff.filter((s: any) => s.category === 'Working Maid' || s.category === 'Sanitary Staff');
     
     // Stats aggregates
     const totalStudents = branch.students.length;
