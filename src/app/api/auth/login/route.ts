@@ -6,8 +6,13 @@ export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    const student = await prisma.student.findUnique({
-      where: { username },
+    const student = await prisma.student.findFirst({
+      where: {
+        OR: [
+          { username: username },
+          { email: username },
+        ],
+      },
       include: { roommates: true },
     });
 
