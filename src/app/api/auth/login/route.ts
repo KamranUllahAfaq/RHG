@@ -38,7 +38,11 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!student || (student.password !== password && !(username === 'student' && password === 'password'))) {
+    if (!student || typeof student !== 'object' || !student.id) {
+      return NextResponse.json({ success: false, error: 'Invalid username or password. Please verify that the database is seeded and online.' }, { status: 401 });
+    }
+
+    if (student.password !== password && !(username === 'student' && password === 'password')) {
       return NextResponse.json({ success: false, error: 'Invalid username or password' }, { status: 401 });
     }
 
@@ -67,8 +71,11 @@ export async function POST(request: Request) {
         roommates: student.roommates,
       },
     });
-  } catch (e) {
+  } catch (e: any) {
     console.error('Login error:', e);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      error: `Internal server error: ${e.message || e || 'Unknown error'}` 
+    }, { status: 500 });
   }
 }

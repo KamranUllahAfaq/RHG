@@ -21,8 +21,12 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: false, error: 'Invalid admin credentials' }, { status: 401 });
-  } catch (e) {
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+  } catch (e: any) {
+    console.error('Admin login error:', e);
+    return NextResponse.json({ 
+      success: false, 
+      error: `Internal server error: ${e.message || e || 'Unknown error'}` 
+    }, { status: 500 });
   }
 }
 

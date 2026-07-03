@@ -12,6 +12,21 @@ const dummyPrisma = new Proxy({} as any, {
     return new Proxy(() => {}, {
       get(t, p) {
         if (p === 'then') return undefined;
+        if (typeof p === 'string') {
+          if (
+            p.startsWith('findFirst') ||
+            p.startsWith('findUnique') ||
+            p.startsWith('create') ||
+            p.startsWith('update') ||
+            p.startsWith('delete') ||
+            p.startsWith('upsert')
+          ) {
+            return () => Promise.resolve(null);
+          }
+          if (p.startsWith('count')) {
+            return () => Promise.resolve(0);
+          }
+        }
         return () => Promise.resolve([]);
       },
       apply() {
