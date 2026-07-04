@@ -14,6 +14,24 @@ export async function PUT(request: Request) {
     const studentId = studentIdCookie.value;
     const { mobile, emergencyContact, email } = await request.json();
 
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({
+        success: true,
+        student: {
+          id: 'mock_student_id_123456789012',
+          username: 'student',
+          name: 'Ahmad Malik (Mock Mode)',
+          email: email || 'ahmad.malik@student.comsats.edu.pk',
+          rollNumber: 'FA21-BCS-089',
+          hostelName: 'Branch 11',
+          roomNumber: 'B11-302',
+          balanceDue: 11000.0,
+          mobile: mobile || '+92 300 1234567',
+          emergencyContact: emergencyContact || '+92 312 9876543',
+        },
+      });
+    }
+
     const updatedStudent = await prisma.student.update({
       where: { id: studentId },
       data: {
